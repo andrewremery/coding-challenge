@@ -68,8 +68,8 @@ class Block {
 		ob_start();
 
 		?>
-		<div class="<?php echo $class_name; ?>">
-			<h2>Post Counts</h2>
+		<div class="<?php echo esc_attr( $class_name ); ?>">
+			<h2><?php esc_html_e( 'Post Counts', 'site-counts' ); ?></h2>
 			<ul>
 			<?php
 			foreach ( $post_types as $post_type_slug ) :
@@ -85,10 +85,26 @@ class Block {
 
 				?>
 				<li>
-					<?php echo 'There are ' . $post_count . ' ' . $post_type_object->labels->name . '.'; ?>
+				<?php
+				echo sprintf(
+					'%1$s %2$d %3$s',
+					esc_html__( 'There are', 'site-counts' ),
+					absint( $post_count ),
+					esc_html( $post_type_object->labels->name )
+				);
+				?>
 				</li>
 			<?php endforeach; ?>
-			</ul><p><?php echo 'The current post ID is ' . $_GET['post_id'] . '.'; ?></p>
+			</ul>
+			<p>
+			<?php
+				echo sprintf(
+					'%1$s %2$d.',
+					esc_html__( 'The current post ID is', 'site-counts' ),
+					absint( $post->ID )
+				);
+			?>
+			</p>
 
 			<?php
 			$query = new WP_Query(
@@ -113,13 +129,13 @@ class Block {
 
 			if ( $query->found_posts ) :
 				?>
-				<h2>5 posts with the tag of foo and the category of baz</h2>
+				<h2><?php esc_html_e( 'Any 5 posts with the tag of foo and the category of baz', 'site-counts' ); ?></h2>
 				<ul>
 				<?php
 
 				foreach ( array_slice( $query->posts, 0, 5 ) as $post ) :
 					?>
-					<li><?php echo $post->post_title; ?></li>
+					<li><?php echo esc_html( $post->post_title ); ?></li>
 								<?php
 				endforeach;
 			endif;
