@@ -78,7 +78,7 @@ class Block {
 					get_posts(
 						[
 							'post_type'      => $post_type_slug,
-							'posts_per_page' => -1,
+							'posts_per_page' => -1, // Can we maybe limit this for performance?
 						]
 					)
 				);
