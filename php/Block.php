@@ -66,8 +66,8 @@ class Block {
 		$post_types = get_post_types( [ 'public' => true ] );
 		$class_name = $attributes['className'];
 		ob_start();
-
 		?>
+
 		<div class="<?php echo esc_attr( $class_name ); ?>">
 			<h2><?php esc_html_e( 'Post Counts', 'site-counts' ); ?></h2>
 			<ul>
@@ -82,17 +82,16 @@ class Block {
 						]
 					)
 				);
-
 				?>
 				<li>
-				<?php
-				echo sprintf(
-					'%1$s %2$d %3$s',
-					esc_html__( 'There are', 'site-counts' ),
-					absint( $post_count ),
-					esc_html( $post_type_object->labels->name )
-				);
-				?>
+					<?php
+					echo sprintf(
+						'%1$s %2$d %3$s',
+						esc_html__( 'There are', 'site-counts' ),
+						absint( $post_count ),
+						esc_html( $post_type_object->labels->name )
+					);
+					?>
 				</li>
 			<?php endforeach; ?>
 			</ul>
@@ -105,7 +104,6 @@ class Block {
 				);
 			?>
 			</p>
-
 			<?php
 			$current_post = get_the_ID();
 			$query        = new WP_Query(
@@ -126,23 +124,17 @@ class Block {
 					'category_name' => 'baz',
 				]
 			);
-
-			if ( $query->found_posts ) :
-				?>
+			?>
+			<?php if ( $query->found_posts ) : ?>
 				<h2><?php esc_html_e( 'Any 5 posts with the tag of foo and the category of baz', 'site-counts' ); ?></h2>
 				<ul>
-				<?php
-
-				foreach ( array_slice( $query->posts, 0, 5 ) as $post ) :
-					?>
-					<?php if ( $post->ID !== $current_post ) : ?>
-						<li><?php echo esc_html( $post->post_title ); ?></li>
-								<?php
-					endif;
-				endforeach;
-			endif;
-			?>
-			</ul>
+					<?php foreach ( array_slice( $query->posts, 0, 5 ) as $post ) : ?>
+						<?php if ( $post->ID !== $current_post ) : ?>
+							<li><?php echo esc_html( $post->post_title ); ?></li>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
 		</div>
 		<?php
 
