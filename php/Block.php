@@ -107,7 +107,8 @@ class Block {
 			</p>
 
 			<?php
-			$query = new WP_Query(
+			$current_post = get_the_ID();
+			$query        = new WP_Query(
 				[
 					'post_type'     => [ 'post', 'page' ],
 					'post_status'   => 'any',
@@ -123,7 +124,6 @@ class Block {
 					],
 					'tag'           => 'foo',
 					'category_name' => 'baz',
-					'post__not_in'  => [ get_the_ID() ],
 				]
 			);
 
@@ -135,8 +135,10 @@ class Block {
 
 				foreach ( array_slice( $query->posts, 0, 5 ) as $post ) :
 					?>
-					<li><?php echo esc_html( $post->post_title ); ?></li>
+					<?php if ( $post->ID !== $current_post ) : ?>
+						<li><?php echo esc_html( $post->post_title ); ?></li>
 								<?php
+					endif;
 				endforeach;
 			endif;
 			?>
