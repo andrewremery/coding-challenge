@@ -101,7 +101,7 @@ class Block {
 				echo sprintf(
 					'%1$s %2$d.',
 					esc_html__( 'The current post ID is', 'site-counts' ),
-					absint( $post->ID )
+					absint( get_the_ID() )
 				);
 			?>
 			</p>
