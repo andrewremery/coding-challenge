@@ -63,7 +63,7 @@ class Block {
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
-		$post_types = get_post_types( array( 'public' => true ) );
+		$post_types = get_post_types( [ 'public' => true ] );
 		$class_name = $attributes['className'];
 		ob_start();
 
@@ -76,10 +76,10 @@ class Block {
 				$post_type_object = get_post_type_object( $post_type_slug );
 				$post_count       = count(
 					get_posts(
-						array(
+						[
 							'post_type'      => $post_type_slug,
 							'posts_per_page' => -1,
-						)
+						]
 					)
 				);
 
@@ -92,23 +92,23 @@ class Block {
 
 			<?php
 			$query = new WP_Query(
-				array(
-					'post_type'     => array( 'post', 'page' ),
+				[
+					'post_type'     => [ 'post', 'page' ],
 					'post_status'   => 'any',
-					'date_query'    => array(
-						array(
+					'date_query'    => [
+						[
 							'hour'    => 9,
 							'compare' => '>=',
-						),
-						array(
+						],
+						[
 							'hour'    => 17,
 							'compare' => '<=',
-						),
-					),
+						],
+					],
 					'tag'           => 'foo',
 					'category_name' => 'baz',
-					'post__not_in'  => array( get_the_ID() ),
-				)
+					'post__not_in'  => [ get_the_ID() ],
+				]
 			);
 
 			if ( $query->found_posts ) :
