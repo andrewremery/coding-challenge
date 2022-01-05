@@ -39,7 +39,7 @@ class Block {
 	 * @return void
 	 */
 	public function init() {
-		add_action( 'init', [ $this, 'register_block' ] );
+		add_action( 'init', array( $this, 'register_block' ) );
 	}
 
 	/**
@@ -48,9 +48,9 @@ class Block {
 	public function register_block() {
 		register_block_type_from_metadata(
 			$this->plugin->dir(),
-			[
-				'render_callback' => [ $this, 'render_callback' ],
-			]
+			array(
+				'render_callback' => array( $this, 'render_callback' ),
+			)
 		);
 	}
 
@@ -63,63 +63,78 @@ class Block {
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
-		$post_types = get_post_types(  [ 'public' => true ] );
+		$post_types = get_post_types( [ 'public' => true ] );
 		$class_name = $attributes['className'];
 		ob_start();
-
 		?>
-        <div class="<?php echo $class_name; ?>">
-			<h2>Post Counts</h2>
+
+		<div class="<?php echo esc_attr( $class_name ); ?>">
+			<h2><?php esc_html_e( 'Post Counts', 'site-counts' ); ?></h2>
 			<ul>
 			<?php
 			foreach ( $post_types as $post_type_slug ) :
-                $post_type_object = get_post_type_object( $post_type_slug  );
-                $post_count = count(
-                    get_posts(
+				$post_type_object = get_post_type_object( $post_type_slug );
+				$post_count       = count(
+					get_posts(
 						[
-							'post_type' => $post_type_slug,
-							'posts_per_page' => -1,
+							'post_type'      => $post_type_slug,
+							'posts_per_page' => -1, // Can we maybe limit this for performance?
 						]
 					)
-                );
-
+				);
 				?>
-				<li><?php echo 'There are ' . $post_count . ' ' .
-					  $post_type_object->labels->name . '.'; ?></li>
-			<?php endforeach;	?>
-			</ul><p><?php echo 'The current post ID is ' . $_GET['post_id'] . '.'; ?></p>
-
-			<?php
-			$query = new WP_Query(  array(
-				'post_type' => ['post', 'page'],
-				'post_status' => 'any',
-				'date_query' => array(
-					array(
-						'hour'      => 9,
-						'compare'   => '>=',
-					),
-					array(
-						'hour' => 17,
-						'compare'=> '<=',
-					),
-				),
-                'tag'  => 'foo',
-                'category_name'  => 'baz',
-				  'post__not_in' => [ get_the_ID() ],
-			));
-
-			if ( $query->found_posts ) :
-				?>
-				 <h2>5 posts with the tag of foo and the category of baz</h2>
-                <ul>
-                <?php
-
-                 foreach ( array_slice( $query->posts, 0, 5 ) as $post ) :
-                    ?><li><?php echo $post->post_title ?></li><?php
-				endforeach;
-			endif;
-		 	?>
+				<li>
+					<?php
+					echo sprintf(
+						'%1$s %2$d %3$s',
+						esc_html__( 'There are', 'site-counts' ),
+						absint( $post_count ),
+						esc_html( $post_type_object->labels->name )
+					);
+					?>
+				</li>
+			<?php endforeach; ?>
 			</ul>
+			<p>
+			<?php
+				echo sprintf(
+					'%1$s %2$d.',
+					esc_html__( 'The current post ID is', 'site-counts' ),
+					absint( get_the_ID() )
+				);
+			?>
+			</p>
+			<?php
+			$current_post = get_the_ID();
+			$query        = new WP_Query(
+				[
+					'post_type'     => [ 'post', 'page' ],
+					'post_status'   => 'any',
+					'date_query'    => [
+						[
+							'hour'    => 9,
+							'compare' => '>=',
+						],
+						[
+							'hour'    => 17,
+							'compare' => '<=',
+						],
+					],
+					'tag'           => 'foo',
+					'category_name' => 'baz',
+				]
+			);
+			?>
+			<?php if ( $query->found_posts ) : ?>
+				<h2><?php esc_html_e( 'Any 5 posts with the tag of foo and the category of baz', 'site-counts' ); ?></h2>
+				<ul>
+					<?php foreach ( array_slice( $query->posts, 0, 5 ) as $post ) : ?>
+						<?php if ( $post->ID !== $current_post ) : ?>
+							<li><?php echo esc_html( $post->post_title ); ?></li>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</ul>
+			<?php endif; ?>
 		</div>
 		<?php
 
